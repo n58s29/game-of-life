@@ -1,23 +1,23 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { Play, Pause, RotateCcw, Plus, Minus } from 'lucide-react';
 
+const ROWS = 40;
+const COLS = 60;
+const OPERATIONS = [
+  [-1, -1], [-1, 0], [-1, 1],
+  [0, -1],           [0, 1],
+  [1, -1],  [1, 0],  [1, 1]
+];
+
 const GameOfLife = () => {
-  const [rows] = useState(40);
-  const [cols] = useState(60);
-  const [grid, setGrid] = useState(() => 
-    Array(40).fill().map(() => Array(60).fill(false))
+  const [grid, setGrid] = useState(() =>
+    Array(ROWS).fill().map(() => Array(COLS).fill(false))
   );
   const [running, setRunning] = useState(false);
   const [speed, setSpeed] = useState(100);
   const [generation, setGeneration] = useState(0);
   const runningRef = useRef(running);
   runningRef.current = running;
-
-  const operations = [
-    [-1, -1], [-1, 0], [-1, 1],
-    [0, -1],           [0, 1],
-    [1, -1],  [1, 0],  [1, 1]
-  ];
 
   const runSimulation = useCallback(() => {
     if (!runningRef.current) return;
@@ -26,10 +26,10 @@ const GameOfLife = () => {
       const newGrid = g.map((row, i) =>
         row.map((cell, j) => {
           let neighbors = 0;
-          operations.forEach(([x, y]) => {
+          OPERATIONS.forEach(([x, y]) => {
             const newI = i + x;
             const newJ = j + y;
-            if (newI >= 0 && newI < rows && newJ >= 0 && newJ < cols) {
+            if (newI >= 0 && newI < ROWS && newJ >= 0 && newJ < COLS) {
               if (g[newI][newJ]) neighbors++;
             }
           });
@@ -44,7 +44,7 @@ const GameOfLife = () => {
 
     setGeneration(gen => gen + 1);
     setTimeout(runSimulation, speed);
-  }, [operations, rows, cols, speed]);
+  }, [speed]);
 
   const handleCellClick = (i, j) => {
     const newGrid = grid.map((row, rowIdx) =>
@@ -56,14 +56,14 @@ const GameOfLife = () => {
   };
 
   const resetGrid = () => {
-    setGrid(Array(rows).fill().map(() => Array(cols).fill(false)));
+    setGrid(Array(ROWS).fill().map(() => Array(COLS).fill(false)));
     setGeneration(0);
     setRunning(false);
   };
 
   const randomize = () => {
-    setGrid(Array(rows).fill().map(() => 
-      Array(cols).fill().map(() => Math.random() > 0.7)
+    setGrid(Array(ROWS).fill().map(() =>
+      Array(COLS).fill().map(() => Math.random() > 0.7)
     ));
     setGeneration(0);
   };
@@ -84,11 +84,11 @@ const GameOfLife = () => {
           </div>
         </div>
 
-        <div 
+        <div
           className="inline-block bg-slate-900 p-2 rounded-lg mb-4 border border-slate-700"
           style={{
             display: 'grid',
-            gridTemplateColumns: `repeat(${cols}, 10px)`,
+            gridTemplateColumns: `repeat(${COLS}, 10px)`,
             gap: '1px'
           }}
         >
